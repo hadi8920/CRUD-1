@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 
 async function giveBooks(req, res) {
   try {
-    const { book, author } = req.body;
+    const { book, author , genre } = req.body;
   
-    if (!book || !author) {
+    if (!book || !author || !genre) {
       // throw new Error("book and auther are required!");
       return res.status(500).json({
         error: "book and auther are required!",
@@ -23,10 +23,13 @@ async function giveBooks(req, res) {
     const bookData = await bookModel.create({
       book,
       author,
+      genre
     });
   
     if (!bookData) {
-      throw new Error("something went wrong!");
+      return res.status(404).json({
+        error : "Something went wrong"
+      })
     }
   
     res.status(201).json({
@@ -43,7 +46,19 @@ async function giveBooks(req, res) {
 
 async function getAllBooks(req, res) {
   try {
-    const booksData = await bookModel.find();
+    
+    const genre = req.query.genre
+    const sort = req.query.sort
+    const order = req.query.order
+    const sortObj = {}
+    const filter = {}
+    if(sort){
+      sortObj[sort] = order === 'desc' ? -1 : 1
+    }
+    if(genre){
+      filter.genre = genre
+    }
+    const booksData = await bookModel.find(filter).sort(sortObj);
     if (!booksData) {
       return res.status(500).json({
         error: "Something went wrong",
@@ -63,7 +78,7 @@ async function getAllBooks(req, res) {
 
 async function updateBooks(req, res) {
   try {
-    const { book, author } = req.body;
+    const { book, author , genre } = req.body;
     const id = req.params.id;
     
   
@@ -73,10 +88,10 @@ async function updateBooks(req, res) {
       });
     }
   
-    if (!book || !author) {
+    if (!book || !author || !genre) {
       // throw new Error("book and auther are required!");
       return res.status(500).json({
-        error: "book and auther are required!",
+        error: "book, genre and author are required!",
       });
     }
   
@@ -89,7 +104,7 @@ async function updateBooks(req, res) {
   
     const bookData = await bookModel.findOneAndUpdate(
       { _id: id },
-      { book: book, author: author },
+      { book: book, author: author , genre : genre },
       {new : true}
     );
     console.log(bookData)

@@ -6,6 +6,10 @@ const bookSchema = new mongoose.Schema({
         unique:[true , "Book name should be true"],
         required : true
     },
+    genre:{
+        type : String,
+        required : true
+    },
     author: {
         type :String,
         required : true
