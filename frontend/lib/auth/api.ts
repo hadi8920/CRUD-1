@@ -36,9 +36,7 @@ export async function loginUser(email: string, password: string) {
       },
       body: JSON.stringify({ email: email, password: password }),
     });
-    console.log("res from api:", res);
     const data = await res.json();
-    console.log("error--------------",data.message);
 
     if (!res.ok) {
       throw new Error(data.message);
